@@ -166,36 +166,20 @@ struct gameSnakeBoard
 
     void handleInput(uint16_t in)
     {
-        if (in & Input::Button::Left)
-        {
-            lastDir = Input::Button::Left;
-        }
-        else if (in & Input::Button::Right)
-        {
-            lastDir = Input::Button::Right;
-        }
-        else if (in & Input::Button::Up)
-        {
-            lastDir = Input::Button::Up;
-        }
-        else if (in & Input::Button::Down)
-        {
-            lastDir = Input::Button::Down;
-        }
+        if (in & Input::Button::Left)       lastDir = Input::Button::Left;
+        else if (in & Input::Button::Right) lastDir = Input::Button::Right;
+        else if (in & Input::Button::Up)    lastDir = Input::Button::Up;
+        else if (in & Input::Button::Down)  lastDir = Input::Button::Down;
     }
 
     void draw()
     {
         for (uint8_t x=0; x<g_gridSize.x; ++x)
-        {
             for (uint8_t y=0; y<g_gridSize.y; ++y)
-            {
                 if (GridRep[x][y])
                     drawGridBlock({x, y}, snakeCol);
                 else
                     drawGridBlock({x, y}, bgCol);
-            }
-        }
 
         drawGridBlock({snack.pos.x, snack.pos.y}, snackCol);
     };
