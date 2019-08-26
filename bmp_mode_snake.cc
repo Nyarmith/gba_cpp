@@ -27,7 +27,6 @@ constexpr Point g_gridStart
 };
 
 // # drawing functions
-//
 constexpr uint16_t rgb15(uint8_t r, uint8_t g, uint8_t b)
 {
     return r | (g << 5) | (b << 10);
@@ -86,7 +85,6 @@ private:
     uint16_t prev_;
 };
 
-
 // stupid synchronization mechanism based on vertical draw state, TODO: use interrupts
 void frame_sync()
 {
@@ -119,7 +117,7 @@ struct Snack
 struct gameSnakeBoard
 {
     bool GridRep[g_gridSize.x][g_gridSize.y];
-    std::deque<Point> snakePos {{4,3}, {3,3}};
+    std::deque<Point> snakePos {{4,3}, {3,3}}; // 1st element is head
 
     gameSnakeBoard()
     {
@@ -196,7 +194,6 @@ int main()
 {
     Input poller;
 
-
     // setup initial snake and snack
 
     ioram[0] = 0x3; // video mode 3 = bitmap mode
@@ -206,9 +203,9 @@ int main()
 
     g_snakeGame.draw();
     // wait for start button
-    // while (! (poller.poll() & Input::Button::Start) );
+    while (! (poller.poll() & Input::Button::Start) );
     
-    const uint8_t frameReset = 32;
+    const uint8_t frameReset = 32; // 1 frame == 16.66 milliseconds, 32 frame ~= .533 seconds
     uint8_t frameCtr = frameReset;
     for (;;)
     {
