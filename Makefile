@@ -3,7 +3,7 @@
 #
 # --- Project details -------------------------------------------------
 
-PROJ    := snake
+PROJ    := bmp_mode_snake
 TARGET  := $(PROJ)
 
 OBJS    := $(PROJ).o
@@ -18,7 +18,7 @@ OBJCOPY := $(PREFIX)objcopy
 ARCH    := -mthumb-interwork -mthumb
 SPECS   := -specs=gba.specs
 
-CFLAGS  := $(ARCH) -O2 -Wall -fno-strict-aliasing
+CFLAGS  := $(ARCH) -O2 -Wall -fno-strict-aliasing -fno-exceptions
 LDFLAGS := $(ARCH) $(SPECS)
 
 
