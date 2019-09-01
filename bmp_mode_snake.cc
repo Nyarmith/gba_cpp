@@ -2,10 +2,12 @@
 #include <cstdint>
 #include <cstring>
 
+#include <cstdlib>
+
 struct Point { uint8_t x, y; }; 
 
 // # some useful constants
-constexpr Point g_screenDims { 240, 160 };
+const constexpr Point g_screenDims { 240, 160 };
 
 // special memory
 static volatile uint8_t * ioram =   (uint8_t*) 0x04000000;
@@ -93,16 +95,6 @@ void frame_sync()
     while (*vcount < 160);
 }
 
-// stupid LCG random for the speed
-uint16_t rand()
-{
-    static uint16_t Xn = 1;  // seed value
-    constexpr uint16_t A = (1 << 10) / 2;
-    constexpr uint16_t C = (1 << 12) + 17;
-    Xn = Xn * A + C;
-    return Xn;
-}
-
 struct Snack
 {
     void newPos()
@@ -110,8 +102,13 @@ struct Snack
         pos.x = rand() % g_gridSize.x;
         pos.y = rand() % g_gridSize.y;
     };
-    Point pos{4,4};
+    Point pos{5,5};
 };
+
+namespace
+{
+    const constexpr int GameOver = 1;
+}
 
 // snake and board drawing representation
 struct gameSnakeBoard
@@ -121,19 +118,23 @@ struct gameSnakeBoard
 
     gameSnakeBoard()
     {
+        resetGridRep();
+    };
+
+    void resetGridRep()
+    {
         for (uint8_t x=0; x<g_gridSize.x; ++x)
             for (uint8_t y=0; y<g_gridSize.y; ++y)
                 GridRep[x][y] = false;
 
         for (auto e : snakePos)
             GridRep[e.x][e.y] = true;
-    };
+    }
 
-    void update()
+    int update()
     {
         auto first = snakePos.front();
         const auto last = snakePos.back();
-        snakePos.pop_back();
 
         GridRep[last.x][last.y] = false;
 
@@ -152,14 +153,45 @@ struct gameSnakeBoard
                 ++first.y;
                 break;
         }
-        
+        //TODO: turning around
+
+        // self-collision
+        for (auto snakeP : snakePos)
+        {
+            if (first.x == snakeP.x && first.y == snakeP.y)
+                return GameOver;
+        }
+
+        // wall collision
+        if (first.x >= g_gridSize.x || first.x < 0 || first.y >= g_gridSize.y || first.y < 0)
+            return GameOver;
+
+        // eating block makes the nsnake not reduce its length and redraw a snack
+        if (first.x == snack.pos.x && first.y == snack.pos.y)
+        {
+            bool snackCheck = false;
+            while (!snackCheck)
+            {
+                snack.newPos();
+                for(auto snakeP : snakePos)
+                {
+                    if (snakeP.x == snack.pos.x && snakeP.y == snack.pos.y)
+                        break;
+                }
+                snackCheck = true;
+            }
+            drawGridBlock({snack.pos.x, snack.pos.y}, snackCol);
+        } else {
+            snakePos.pop_back();
+        }
+
         snakePos.push_front(first);
         GridRep[first.x][first.y] = true;
 
         drawGridBlock({first.x, first.y}, snakeCol);
         drawGridBlock({last.x, last.y}, bgCol);
 
-        //TODO: handle wall collission, eating block, turning around, self-collission
+        return 0;
     };
 
     void handleInput(uint16_t in)
@@ -182,6 +214,14 @@ struct gameSnakeBoard
         drawGridBlock({snack.pos.x, snack.pos.y}, snackCol);
     };
 
+    void reset()
+    {
+        snakePos = {{4,3}, {3,3}};
+        snack = {5,5};
+        lastDir = Input::Button::Right;
+        resetGridRep();
+    }
+
     const uint16_t snakeCol = rgb15(0,120,20);
     const uint16_t bgCol    = rgb15(20,20,20);
     const uint16_t snackCol = rgb15(120,120,0);
@@ -200,27 +240,34 @@ int main()
     ioram[1] = 0x4;
 
     // g_snakeGame.draw();
-
-    g_snakeGame.draw();
-    // wait for start button
-    while (! (poller.poll() & Input::Button::Start) );
-    
-    const uint8_t frameReset = 32; // 1 frame == 16.66 milliseconds, 32 frame ~= .533 seconds
-    uint8_t frameCtr = frameReset;
-    for (;;)
+    while (true)
     {
-        frame_sync();
-        auto in = poller.poll();
-        if (in & 0xF0)
-            g_snakeGame.handleInput(in);
-
-        if (frameCtr > 0)
+        g_snakeGame.draw();
+        // wait for start button
+        while (! (poller.poll() & Input::Button::Start) );
+        
+        const uint8_t frameReset = 32; // 1 frame == 16.66 milliseconds, 32 frame ~= .533 seconds
+        uint8_t frameCtr = frameReset;
+        for (;;)
         {
-            --frameCtr;
-            continue;
-        }
-        frameCtr = frameReset;
+            frame_sync();
+            auto in = poller.poll();
+            if (in & 0xF0)
+                g_snakeGame.handleInput(in);
 
-        g_snakeGame.update();
+            if (frameCtr > 0)
+            {
+                --frameCtr;
+                continue;
+            }
+            frameCtr = frameReset;
+
+            auto stat = g_snakeGame.update();
+            
+            if (stat == GameOver)
+                break;
+        }
+
+        g_snakeGame.reset();
     }
 }
