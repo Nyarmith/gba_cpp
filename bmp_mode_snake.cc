@@ -2,13 +2,12 @@
 #include <cstdint>
 #include <cstring>
 
-#include <stdlib.h>
+#include <cstdlib>
 
 struct Point { uint8_t x, y; }; 
 
 // # some useful constants
-constexpr Point g_screenDims { 240, 160 };
-constexpr int GameOver = 1;
+const constexpr Point g_screenDims { 240, 160 };
 
 // special memory
 static volatile uint8_t * ioram =   (uint8_t*) 0x04000000;
@@ -106,6 +105,11 @@ struct Snack
     Point pos{5,5};
 };
 
+namespace
+{
+    const constexpr int GameOver = 1;
+}
+
 // snake and board drawing representation
 struct gameSnakeBoard
 {
@@ -159,7 +163,7 @@ struct gameSnakeBoard
         }
 
         // wall collision
-        if (first.x > g_gridSize.x - 1 || first.x < 0 || first.y > g_gridSize.y - 1 || first.y < 0)
+        if (first.x >= g_gridSize.x || first.x < 0 || first.y >= g_gridSize.y || first.y < 0)
             return GameOver;
 
         // eating block makes the nsnake not reduce its length and redraw a snack
