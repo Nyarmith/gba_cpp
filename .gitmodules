@@ -1,0 +1,3 @@
+[submodule "s-mat"]
+	path = s-mat
+	url = https://github.com/Nyarmith/s-mat
