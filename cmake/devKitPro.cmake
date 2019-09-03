@@ -1,6 +1,4 @@
 cmake_minimum_required(VERSION 3.10)
-# https://github.com/sebknzl/krawall/blob/master/cmake/FindGba.cmake
-
 
 set(CMAKE_SYSTEM_NAME Generic)
 
