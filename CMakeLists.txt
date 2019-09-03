@@ -4,8 +4,10 @@ project(gba_demos)
 
 include(cmake/devKitPro.cmake)
 include(cmake/submodules.cmake)
-
 update_submodules()
+
+# build git modules
+include(external/CMakeLists.txt)
 
 set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Shared libs not available" )
 
