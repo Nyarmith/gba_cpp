@@ -7,7 +7,7 @@ include(cmake/submodules.cmake)
 update_submodules()
 
 # build git modules
-include(external/CMakeLists.txt)
+add_subdirectory(external)
 
 set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Shared libs not available" )
 
