@@ -56,7 +56,7 @@ public:
     {
         Fixed ret;
         ret.data = -data;
-        return -ret;
+        return ret;
     }
     constexpr operator float() const
     {
