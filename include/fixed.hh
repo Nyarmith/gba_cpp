@@ -81,6 +81,16 @@ public:
         return data>o.data;
     }
 
+    constexpr Fixed operator+=(const Fixed o) const
+    {
+        return *this + o;
+    }
+
+    constexpr Fixed operator-=(const Fixed o) const
+    {
+        return *this - o;
+    }
+
     constexpr bool operator==(const Fixed o) const
     {
         return data==o.data;
