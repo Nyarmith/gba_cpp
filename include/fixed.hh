@@ -17,17 +17,17 @@ public:
     constexpr Fixed(){}
 
     template<typename N,
-        typename std::enable_if_t<std::is_floating_point_v<N>>* = nullptr>
-    constexpr Fixed(N f)
-    {
-        data = f*(1<<(F));
-    };
-
-    template<typename N,
         typename std::enable_if_t<std::is_integral_v<N>>* = nullptr>
     constexpr Fixed(N t)
     {
         data = static_cast<T>(t)<<F;
+    };
+
+    template<typename N,
+        typename std::enable_if_t<std::is_floating_point_v<N>>* = nullptr>
+    explicit constexpr Fixed(N f)
+    {
+        data = f*(1<<(F));
     };
 
     constexpr Fixed operator+(const Fixed &o) const
@@ -66,17 +66,17 @@ public:
     }
 
     template<typename N,
-        typename std::enable_if_t<std::is_floating_point_v<N>>* = nullptr>
-    explicit constexpr operator N() const
-    {
-        return static_cast<N>(data)/(1<<F);
-    }
-
-    template<typename N,
         typename std::enable_if_t<std::is_integral_v<N>>* = nullptr>
     constexpr operator N() const
     {
         return data>>F;
+    }
+
+    template<typename N,
+        typename std::enable_if_t<std::is_floating_point_v<N>>* = nullptr>
+    explicit constexpr operator N() const
+    {
+        return static_cast<N>(data)/(1<<F);
     }
 
     constexpr T round() const
