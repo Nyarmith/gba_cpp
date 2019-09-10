@@ -16,16 +16,18 @@ class Fixed
 public:
     constexpr Fixed(){}
 
-    constexpr explicit Fixed(float f)
+    template<typename N,
+        typename std::enable_if_t<std::is_floating_point_v<N>>* = nullptr>
+    constexpr Fixed(N f)
     {
         data = f*(1<<(F));
     };
 
-    constexpr explicit Fixed(double f) : Fixed(static_cast<float>(f)) {};
-
-    constexpr Fixed(T t)
+    template<typename N,
+        typename std::enable_if_t<std::is_integral_v<N>>* = nullptr>
+    constexpr Fixed(N t)
     {
-        data = t<<F;
+        data = static_cast<T>(t)<<F;
     };
 
     constexpr Fixed operator+(const Fixed &o) const
@@ -34,38 +36,49 @@ public:
         ret.data = data + o.data;
         return ret;
     }
+
     constexpr Fixed operator-(const Fixed &o) const
     {
         Fixed ret;
         ret.data = data - o.data;
         return ret;
     }
+
     constexpr Fixed operator*(const Fixed &o) const
     {
         Fixed ret;
         ret.data = (data*o.data)>>F;
         return ret;
     }
+
     constexpr Fixed operator/(const Fixed &o) const
     {
         Fixed ret;
         ret.data = (data<<F)/o.data;
         return ret;
     }
+
     constexpr Fixed operator-() const
     {
         Fixed ret;
         ret.data = -data;
         return ret;
     }
-    constexpr operator float() const
+
+    template<typename N,
+        typename std::enable_if_t<std::is_floating_point_v<N>>* = nullptr>
+    explicit constexpr operator N() const
     {
-        return static_cast<float>(data)/(1<<F);
+        return static_cast<N>(data)/(1<<F);
     }
-    constexpr operator T() const
+
+    template<typename N,
+        typename std::enable_if_t<std::is_integral_v<N>>* = nullptr>
+    constexpr operator N() const
     {
         return data>>F;
     }
+
     constexpr T round() const
     {
         return data+(1<<(F-1))>>F;
@@ -90,6 +103,18 @@ public:
     constexpr Fixed operator-=(const Fixed o)
     {
         data = data - o.data;
+        return *this;
+    }
+
+    constexpr Fixed operator*=(const Fixed o)
+    {
+        data = (data*o.data)>>F;
+        return *this;
+    }
+
+    constexpr Fixed operator/=(const Fixed o)
+    {
+        data = (data<<F)/o.data;
         return *this;
     }
 

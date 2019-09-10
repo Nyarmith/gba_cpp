@@ -70,10 +70,10 @@ void drawLine(fixed_t x0, fixed_t y0, fixed_t x1, fixed_t y1, uint16_t col)
     int16_t xstep = x0 < x1 ? 1 : -1;
 
     // we don't need the fixed-point for actual drawing
-    int16_t from_x = static_cast<int32_t>(x0);
-    int16_t from_y = static_cast<int32_t>(y0);
-    int16_t to_x   = static_cast<int32_t>(x1);
-    int16_t to_y   = static_cast<int32_t>(y1);
+    int16_t from_x = x0;
+    int16_t from_y = y0;
+    int16_t to_x   = x1;
+    int16_t to_y   = y1;
 
     // vertical
     if (from_x == to_x)
@@ -97,7 +97,7 @@ void drawLine(fixed_t x0, fixed_t y0, fixed_t x1, fixed_t y1, uint16_t col)
         return;
     }
 
-    fixed_t dydx = (y1-y0)/(x1-x0)*static_cast<fixed_t>(static_cast<int32_t>(xstep));
+    fixed_t dydx = (y1-y0)/(x1-x0)*xstep;
     // along x
     //
     // consider swapping for greater y for linear access of vram
@@ -105,17 +105,17 @@ void drawLine(fixed_t x0, fixed_t y0, fixed_t x1, fixed_t y1, uint16_t col)
     {
         while (from_x != to_x)
         {
-            bmpDrawPixel(from_x,static_cast<int32_t>(y0),col);
+            bmpDrawPixel(from_x,y0,col);
             from_x += xstep;
             y0 += dydx;
         }
     }
     else // along y
     {
-        fixed_t dxdy = (x1-x0)/(y1-y0)*static_cast<fixed_t>(static_cast<int32_t>(ystep));
+        fixed_t dxdy = (x1-x0)/(y1-y0)*ystep;
         while (from_y != to_y)
         {
-            bmpDrawPixel(static_cast<int32_t>(x0),from_y,col);
+            bmpDrawPixel(x0,from_y,col);
             from_y += ystep;
             x0 += dxdy;
         }
