@@ -58,8 +58,10 @@ constexpr const LineInd lineIndices_[]
     {6,7},
 };
 
-fixed_t xRot = 0.75_fx; // up-down changes rotation about x
-fixed_t yRot = 0.75_fx; // left-right changes rotation about y
+fixed_t xRot = 0_fx;
+fixed_t yRot = 0_fx;
+fixed_t xRotRate = 0.01_fx; // up-down changes rotation rate about x
+fixed_t yRotRate = 0.01_fx; // left-right changes rotation rate about y
 
 
 void drawLine(fixed_t x0, fixed_t y0, fixed_t x1, fixed_t y1, uint16_t col)
@@ -161,19 +163,22 @@ int main()
     Mat3 xMat {};
     Mat3 yMat {};
 
+    uint16_t key = poller.poll();
     const uint16_t cubeCol = rgb15(20,220,90);
     for (;;)
     {
-        uint16_t key = poller.poll();
 
         if (key & InputPoller::Left)
-            xRot += .75;
+            yRotRate += .02_fx;
         else if (key & InputPoller::Right)
-            xRot -= .75;
+            yRotRate -= .02_fx;
         else if (key & InputPoller::Up)
-            yRot += .75;
+            xRotRate += .02_fx;
         else if (key & InputPoller::Down)
-            yRot -= .75;
+            xRotRate -= .02_fx;
+
+        xRot += xRotRate;
+        yRot += yRotRate;
 
         // clear old cube
         drawCubeLines(xMat, yMat, cubePos_,
@@ -197,6 +202,8 @@ int main()
 
         // draw new cube
         wait_frame();
+        key = poller.poll();
         wait_frame();
+        key |= poller.poll();
     }
 }
