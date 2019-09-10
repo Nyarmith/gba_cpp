@@ -94,25 +94,25 @@ public:
         return data>o.data;
     }
 
-    constexpr Fixed operator+=(const Fixed o)
+    constexpr Fixed& operator+=(const Fixed o)
     {
         data = data + o.data;
         return *this;
     }
 
-    constexpr Fixed operator-=(const Fixed o)
+    constexpr Fixed& operator-=(const Fixed o)
     {
         data = data - o.data;
         return *this;
     }
 
-    constexpr Fixed operator*=(const Fixed o)
+    constexpr Fixed& operator*=(const Fixed o)
     {
         data = (data*o.data)>>F;
         return *this;
     }
 
-    constexpr Fixed operator/=(const Fixed o)
+    constexpr Fixed& operator/=(const Fixed o)
     {
         data = (data<<F)/o.data;
         return *this;
