@@ -169,13 +169,13 @@ int main()
     {
 
         if (key & InputPoller::Left)
-            yRotRate += .02_fx;
+            yRotRate += .01_fx;
         else if (key & InputPoller::Right)
-            yRotRate -= .02_fx;
+            yRotRate -= .01_fx;
         else if (key & InputPoller::Up)
-            xRotRate += .02_fx;
+            xRotRate += .01_fx;
         else if (key & InputPoller::Down)
-            xRotRate -= .02_fx;
+            xRotRate -= .01_fx;
 
         xRot += xRotRate;
         yRot += yRotRate;
