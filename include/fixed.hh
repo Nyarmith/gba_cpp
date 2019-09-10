@@ -81,14 +81,16 @@ public:
         return data>o.data;
     }
 
-    constexpr Fixed operator+=(const Fixed o) const
+    constexpr Fixed operator+=(const Fixed o)
     {
-        return *this + o;
+        data = data + o.data;
+        return *this;
     }
 
-    constexpr Fixed operator-=(const Fixed o) const
+    constexpr Fixed operator-=(const Fixed o)
     {
-        return *this - o;
+        data = data - o.data;
+        return *this;
     }
 
     constexpr bool operator==(const Fixed o) const

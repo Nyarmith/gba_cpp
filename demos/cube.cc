@@ -17,8 +17,8 @@ using Vec4=Vec<fixed_t,4>;
 using Mat3=Matrix<fixed_t,3,3>;
 using Mat4=Matrix<fixed_t,4,4>;
 
-constexpr const fixed_t cubeLength = 50;
-constexpr const Vec3 cubePos_ {g_screenWidth/2, g_screenHeight/2, cubeLength};
+constexpr const fixed_t cubeLength_ = 50;
+constexpr const Vec3 cubePos_ {g_screenWidth/2, g_screenHeight/2, cubeLength_};
 
 
 //our coord system is:
@@ -58,8 +58,8 @@ constexpr const LineInd lineIndices_[]
     {6,7},
 };
 
-fixed_t xRot = 0.74; // up-down changes rotation about x
-fixed_t yRot = 0.75; // left-right changes rotation about y
+fixed_t xRot = 0.75_fx; // up-down changes rotation about x
+fixed_t yRot = 0.75_fx; // left-right changes rotation about y
 
 
 void drawLine(fixed_t x0, fixed_t y0, fixed_t x1, fixed_t y1, uint16_t col)
@@ -95,7 +95,7 @@ void drawLine(fixed_t x0, fixed_t y0, fixed_t x1, fixed_t y1, uint16_t col)
         return;
     }
 
-    fixed_t dydx = (y1-y0)/(x1-x0);
+    fixed_t dydx = (y1-y0)/(x1-x0)*static_cast<fixed_t>(static_cast<int32_t>(xstep));
     // along x
     //
     // consider swapping for greater y for linear access of vram
@@ -110,7 +110,7 @@ void drawLine(fixed_t x0, fixed_t y0, fixed_t x1, fixed_t y1, uint16_t col)
     }
     else // along y
     {
-        fixed_t dxdy = (x1-x0)/(y1-y0);
+        fixed_t dxdy = (x1-x0)/(y1-y0)*static_cast<fixed_t>(static_cast<int32_t>(ystep));
         while (from_y != to_y)
         {
             bmpDrawPixel(static_cast<int32_t>(x0),from_y,col);
@@ -122,14 +122,14 @@ void drawLine(fixed_t x0, fixed_t y0, fixed_t x1, fixed_t y1, uint16_t col)
 
 }
 
-void drawCubeLines(const Mat3 &xRot, const Mat3 &yRot, const Vec3 translation,
+void drawCubeLines(const Mat3 &XR, const Mat3 &YR, const Vec3 translation,
                    const Vec3 vertices[], size_t sizeV,
                    const LineInd indices[], size_t sizeI,
                    const uint16_t color)
 {
     auto txVs = std::make_unique<Vec3[]>(sizeV);
     
-    auto R = xRot*yRot;
+    auto R = cubeLength_*XR*YR;
     for (size_t i=0; i<sizeV; ++i)
         txVs[i] = vertices[i]*R + translation;
 
@@ -147,10 +147,11 @@ int main()
 
     InputPoller poller;
     setVideoMode(VideoMode::VG3);
+    setTileMode(TileMode::BG2);
 
     // clear screen
-    uint16_t bgCol = rgb15(120,120,120);
-    for (uint16_t i=0; i<g_screenHeight*g_screenHeight; ++i)
+    uint16_t bgCol = rgb15(20,20,20);
+    for (uint16_t i=0; i<g_screenHeight*g_screenWidth; ++i)
         vram[i] = bgCol;
     wait_frame();
 
