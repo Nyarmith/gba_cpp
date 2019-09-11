@@ -24,18 +24,18 @@ constexpr const fixed_t Pi = 3.1415927_fx;
 constexpr fixed_t sin(fixed_t x)
 {
     if (x < -Pi/2_fx)
-        return sin(x + Pi);
+        return -sin(x + Pi);
     else if (x > Pi/2_fx)
-        return sin(x - Pi);
+        return -sin(x - Pi);
     return x - x*x*x/6_fx + x*x*x*x*x/120_fx;
 }
 
 constexpr fixed_t cos(fixed_t x)
 {
     if (x < -Pi/2_fx)
-        return cos(x + Pi);
+        return -cos(x + Pi);
     else if (x > Pi/2_fx)
-        return cos(x - Pi);
+        return -cos(x - Pi);
     return 1_fx - x*x/2_fx + x*x*x*x/24_fx;
 }
 
