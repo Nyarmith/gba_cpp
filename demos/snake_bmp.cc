@@ -62,31 +62,6 @@ void drawGridBlock(Point pt, uint16_t col)
                          col);
 }
 
-struct Input
-{
-    enum Button : uint16_t
-    { 
-        A      = 0x0001, B     = 0x0002,
-        Select = 0x0004, Start = 0x0008,
-        Right  = 0x0010, Left  = 0x0020,
-        Up     = 0x0040, Down  = 0x0080,
-        R      = 0x0100, L     = 0x0200
-    };
-
-    const uint16_t Mask {0x03FF};
-
-    uint16_t poll()
-    {
-        const uint16_t InputReg {0x0130};
-        prev_ = key_;
-        key_ = ~*(ioram + InputReg);
-        return key_ & Mask;
-    }
-private:
-    uint16_t key_;
-    uint16_t prev_;
-};
-
 // stupid synchronization mechanism based on vertical draw state, TODO: use interrupts
 void frame_sync()
 {
@@ -109,6 +84,37 @@ namespace
 {
     const constexpr int GameOver = 1;
 }
+
+struct Input
+{
+    enum Button : uint16_t
+    {
+        A      = 0x0001, B     = 0x0002,
+        Select = 0x0004, Start = 0x0008,
+        Right  = 0x0010, Left  = 0x0020,
+        Up     = 0x0040, Down  = 0x0080,
+        R      = 0x0100, L     = 0x0200
+    };
+
+    const uint16_t Mask {0x03FF};
+
+    uint16_t poll()
+    {
+        const uint16_t InputReg {0x0130};
+        prev_ = key_;
+        key_ = ~*(ioram + InputReg) & Mask;
+        return key_;
+    }
+
+    uint16_t prev()
+    {
+        return prev_;
+    }
+private:
+    uint16_t key_;
+    uint16_t prev_;
+};
+
 
 // snake and board drawing representation
 struct gameSnakeBoard
