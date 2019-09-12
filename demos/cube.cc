@@ -1,11 +1,12 @@
 #include <cstdint>
-#include <type_traits>
 #include <memory>
+#include <type_traits>
 
-#include "s-mat.hh"
+
 #include "bitmap.hh"
-#include "math.hh"
 #include "common.hh"
+#include "math.hh"
+#include "s-mat.hh"
 
 using namespace gba;
 using namespace SMat;
