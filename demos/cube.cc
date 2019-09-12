@@ -2,7 +2,6 @@
 #include <memory>
 #include <type_traits>
 
-
 #include "bitmap.hh"
 #include "common.hh"
 #include "math.hh"
